@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mediconnect - My Appointments</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .container {
+            display: flex;
+            min-height: calc(100vh - 60px);
+        }
+
+        .sidebar {
+            width: 250px;
+            background: white;
+            padding: 1.5rem;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 0.8rem;
+            color: #333;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .nav-link i {
+            margin-right: 0.5rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-header h2 {
+            font-size: 1.8rem;
+            color: #2c3e50;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .appointment-tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e1e5ea;
+        }
+
+        .tab-button {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            background: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+
+        .tab-button.active {
+            color: #3498db;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .tab-button:hover {
+            color: #3498db;
+        }
+
+        .tab-content {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .appointment-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .appointment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .appointment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .appointment-header h3 {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        .appointment-specialization {
+            color: #3498db;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .appointment-detail {
+            margin-bottom: 0.5rem;
+        }
+
+        .appointment-detail i {
+            width: 20px;
+            color: #666;
+            margin-right: 0.5rem;
+        }
+
+        .appointment-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-primary {
+            border: 1px solid #3498db;
+            color: #3498db;
+            background: transparent;
+        }
+
+        .btn-outline-primary:hover {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-outline-danger {
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+            background: transparent;
+        }
+
+        .btn-outline-danger:hover {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-confirmed {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .badge-completed {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .badge-cancelled {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        .appointments-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .appointments-table th,
+        .appointments-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .appointments-table th {
+            background: #3498db;
+            color: white;
+            font-weight: 600;
+        }
+
+        .appointments-table tr:hover {
+            background: #f5f7fa;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: #bbb;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow: auto;
+            padding: 2rem;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-dialog {
+            width: 100%;
+            max-width: 500px;
+            margin: auto;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h5 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+
+        .modal-header .btn-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .report-item {
+            padding: 1rem;
+            border-left: 3px solid #3498db;
+            margin-bottom: 1rem;
+            background: #f9f9f9;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .report-badge {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .appointment-actions {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>Mediconnect - Patient Portal</h1>
+        <div class="user-info">
+            <span>{{ session['patient_name'] }}</span>
+            <a href="{{ url_for('logout') }}" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>Navigation</h2>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="{{ url_for('patient_dashboard') }}" class="nav-link">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('patient_appointments') }}" class="nav-link active">
+                        <i class="fas fa-calendar-alt"></i> Appointments
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('patient_profile') }}" class="nav-link">
+                        <i class="fas fa-user"></i> Profile
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="dashboard-header">
+                <h2>My Appointments</h2>
+                
+            </div>
+
+            <!-- Tabs -->
+            <div class="appointment-tabs" id="appointmentTabs">
+                <button class="tab-button active" id="upcoming-tab" data-target="upcoming">Upcoming</button>
+                <button class="tab-button" id="past-tab" data-target="past">Past</button>
+                <button class="tab-button" id="cancelled-tab" data-target="cancelled">Cancelled</button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- Upcoming Appointments -->
+                <div class="tab-pane active" id="upcoming">
+                    {% if upcoming_appointments %}
+                    <div class="row">
+                        {% for appt in upcoming_appointments %}
+                        <div class="appointment-card">
+                            <div class="appointment-header">
+                                <h3>Dr. {{ appt.doctor_name }}</h3>
+                                <span class="badge badge-confirmed">Confirmed</span>
+                            </div>
+                            <div class="appointment-specialization">{{ appt.specialization }}</div>
+                            <div class="appointment-detail">
+                                <i class="far fa-calendar-alt"></i>
+                                {{ appt.appointment_date.strftime('%A, %d %B %Y') }}
+                            </div>
+                            <div class="appointment-detail">
+                                <i class="far fa-clock"></i>
+                                {{ appt.appointment_date.strftime('%I:%M %p') }}
+                            </div>
+                            <div class="appointment-actions">
+                                <button class="btn btn-outline-primary"
+                                    onclick="openModal('rescheduleModal{{ appt.id }}')">
+                                    Reschedule
+                                </button>
+                                <button class="btn btn-outline-danger" onclick="openModal('cancelModal{{ appt.id }}')">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Reschedule Modal -->
+                        <div class="modal" id="rescheduleModal{{ appt.id }}">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Reschedule Appointment</h5>
+                                        <button type="button" class="btn-close"
+                                            onclick="closeModal('rescheduleModal{{ appt.id }}')">&times;</button>
+                                    </div>
+                                    <form action="{{ url_for('reschedule_appointment', appointment_id=appt.id) }}"
+                                        method="POST">
+                                        <div class="modal-body">
+                                            <div>
+                                                <label class="form-label">New Date & Time</label>
+                                                <input type="datetime-local" class="form-control" name="new_date"
+                                                    required>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline-primary"
+                                                onclick="closeModal('rescheduleModal{{ appt.id }}')">Close</button>
+                                            <button type="submit" class="btn btn-primary">Confirm Changes</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Cancel Modal -->
+                        <div class="modal" id="cancelModal{{ appt.id }}">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Cancel Appointment</h5>
+                                        <button type="button" class="btn-close"
+                                            onclick="closeModal('cancelModal{{ appt.id }}')">&times;</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Are you sure you want to cancel this appointment with Dr. {{ appt.doctor_name
+                                            }}?</p>
+                                        <p class="text-muted">{{ appt.appointment_date.strftime('%A, %d %B %Y at %I:%M
+                                            %p') }}</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-outline-primary"
+                                            onclick="closeModal('cancelModal{{ appt.id }}')">Go Back</button>
+                                        <a href="{{ url_for('cancel_appointment', appointment_id=appt.id) }}"
+                                            class="btn btn-outline-danger">Cancel Appointment</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="far fa-calendar-times"></i>
+                        <h3>No Upcoming Appointments</h3>
+                        <p>You don't have any scheduled appointments right now.</p>
+                        <a href="{{ url_for('patient_dashboard') }}" class="btn-primary"
+                            style="display: inline-flex; align-items: center; padding: 8px 12px; font-size: 14px;">
+                            <i class="fas fa-plus fa-sm" style="margin-right: 6px;"></i> Book Appointment
+                        </a>
+
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Past Appointments -->
+                <div class="tab-pane" id="past">
+                    {% if past_appointments %}
+                    <table class="appointments-table">
+                        <thead>
+                            <tr>
+                                <th>Doctor</th>
+                                <th>Specialization</th>
+                                <th>Date & Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appt in past_appointments %}
+                            <tr>
+                                <td>Dr. {{ appt.doctor_name }}</td>
+                                <td>{{ appt.specialization }}</td>
+                                <td>{{ appt.appointment_date.strftime('%d %b %Y, %I:%M %p') }}</td>
+                                <td><span class="badge badge-completed">Completed</span></td>
+                                <td>
+                                    <button class="btn btn-outline-primary btn-sm"
+                                        onclick="openModal('detailsModal{{ appt.id }}')">
+                                        Details
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Details Modal -->
+                            <div class="modal" id="detailsModal{{ appt.id }}">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Appointment Details</h5>
+                                            <button type="button" class="btn-close"
+                                                onclick="closeModal('detailsModal{{ appt.id }}')">&times;</button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row mb-4">
+                                                <div>
+                                                    <h6>Doctor Information</h6>
+                                                    <p class="mb-1"><strong>Name:</strong> Dr. {{ appt.doctor_name }}
+                                                    </p>
+                                                    <p class="mb-1"><strong>Specialization:</strong> {{
+                                                        appt.specialization }}</p>
+                                                </div>
+                                                <div style="margin-top: 1rem;">
+                                                    <h6>Appointment Details</h6>
+                                                    <p class="mb-1"><strong>Date:</strong> {{
+                                                        appt.appointment_date.strftime('%d %B %Y') }}</p>
+                                                    <p class="mb-1"><strong>Time:</strong> {{
+                                                        appt.appointment_date.strftime('%I:%M %p') }}</p>
+                                                    <p class="mb-1"><strong>Status:</strong> <span
+                                                            class="badge badge-completed">Completed</span></p>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-4">
+                                                <h6>Medical Reports</h6>
+                                                {% set has_reports = [] %}
+                                                {% for report in reports if report.appointment_id == appt.id %}
+                                                {% if has_reports.append(1) %}{% endif %}
+                                                <div class="report-item">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <a href="{{ url_for('view_report', filename=report.file_path) }}"
+                                                                class="text-decoration-none">
+                                                                <i class="far fa-file-pdf text-danger me-2"></i>{{
+                                                                report.title or report.file_path }}
+                                                            </a>
+                                                            <small class="d-block text-muted mt-1">
+                                                                <i class="fas fa-user-md me-1"></i>Dr. {{
+                                                                report.doctor_name }}
+                                                                <i class="fas fa-calendar-alt ms-3 me-1"></i>{{
+                                                                report.upload_date.strftime('%d %b %Y') }}
+                                                            </small>
+                                                        </div>
+                                                        <span class="badge report-badge">
+                                                            {{ report.file_path.split('.')[-1]|upper }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                                {% if not has_reports %}
+                                                <div class="alert alert-info">
+                                                    <i class="fas fa-info-circle me-2"></i> No reports available for
+                                                    this appointment
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline-primary"
+                                                onclick="closeModal('detailsModal{{ appt.id }}')">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="far fa-calendar-times"></i>
+                        <h3>No Past Appointments</h3>
+                        <p>You haven't had any appointments yet.</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Cancelled Appointments -->
+                <div class="tab-pane" id="cancelled">
+                    {% if cancelled_appointments %}
+                    <table class="appointments-table">
+                        <thead>
+                            <tr>
+                                <th>Doctor</th>
+                                <th>Specialization</th>
+                                <th>Date & Time</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appt in cancelled_appointments %}
+                            <tr>
+                                <td>Dr. {{ appt.doctor_name }}</td>
+                                <td>{{ appt.specialization }}</td>
+                                <td>{{ appt.appointment_date.strftime('%d %b %Y, %I:%M %p') }}</td>
+                                <td><span class="badge badge-cancelled">Cancelled</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="far fa-calendar-times"></i>
+                        <h3>No Cancelled Appointments</h3>
+                        <p>You haven't cancelled any appointments.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab functionality
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', function () {
+                // Remove active class from all tabs
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelectorAll('.tab-pane').forEach(pane => {
+                    pane.classList.remove('active');
+                });
+
+                // Add active class to clicked tab
+                this.classList.add('active');
+                const target = this.getAttribute('data-target');
+                document.getElementById(target).classList.add('active');
+            });
+        });
+
+        // Modal functionality
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // Close modal when clicking outside of it
+        window.addEventListener('click', function (event) {
+            document.querySelectorAll('.modal.show').forEach(modal => {
+                if (event.target === modal) {
+                    modal.classList.remove('show');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
